@@ -1,0 +1,2 @@
+-p2
+launch gui applications from the web browser

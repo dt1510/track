@@ -1,5 +1,5 @@
 <?
-$base_dir="/home/david/Desktop";
+$base_dirs="/home/david/Desktop;/var/www/track";
 
 function rglob($pattern='*', $flags = 0, $path='')
 {
@@ -10,8 +10,12 @@ function rglob($pattern='*', $flags = 0, $path='')
 }
 
 function get_tracking_files() {
-    global $base_dir;
-    return rglob("todo.txt", 0, $base_dir);
+    global $base_dirs;
+    $files = array();
+    foreach(preg_split("/;/",$base_dirs) as $base_dir) {        
+        $files=array_merge($files, rglob("todo.txt", 0, $base_dir));
+    }
+    return $files;
 }
 
 function subject_name($meta_file) {
