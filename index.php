@@ -11,7 +11,7 @@ function rglob($pattern='*', $flags = 0, $path='')
 
 function get_tracking_files() {
     global $base_dir;
-    return rglob("meta.txt", 0, $base_dir);
+    return rglob("todo.txt", 0, $base_dir);
 }
 
 function subject_name($meta_file) {
@@ -50,9 +50,35 @@ function print_list($list) {
     }
 }
 
-function print_subject($file) {
-    echo "<subject>".subject_name($file)."</subject>";
+function print_subject_caption($file) {
+    echo "<subject>".subject_name($file)."</subject><br/>$file";
+}
+
+function print_subject($file) {        
+    print_subject_caption($file);
     print_list(extract_list($file));
+}
+
+function extract_priorities($list) {
+    foreach($list as $heading => $sublist) {
+        if(!preg_match("/^-p[0-9]/", $heading)) {
+            unset($list[$heading]);
+        }
+    }
+    return $list;
+}
+
+function print_subject_list() {
+    foreach(get_tracking_files() as $file) {
+        echo "<div>";        
+        print_subject_priorities($file);
+        echo "</div>";
+    }    
+}
+
+function print_subject_priorities($file) {
+    print_subject_caption($file);
+    print_list(extract_priorities(extract_list($file)));
 }
 
 ?>
@@ -63,10 +89,7 @@ function print_subject($file) {
 </head>
 <body>
 <?
-foreach(get_tracking_files() as $file) {
-    print_subject($file);
-}
-
+print_subject_list();
 ?>
 
 </body>
@@ -75,6 +98,6 @@ body{padding:3px;}
 div{padding:3px;}
 h1{font-weight:bold;}
 sublist_header{font-weight:bold;}
-subject{font-weight:bold;}
+subject{font-weight:bold;color:#f00;}
 </style>
 </html>
