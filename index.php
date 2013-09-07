@@ -40,6 +40,9 @@ function print_list($list) {
         echo "<sublist_header>$heading</sublist_header>";
         echo "<ul>";
         foreach($sublist as $item) {
+            if(preg_match("/https?/",$item)) {
+                $item = "<a href='$item'>$item</a>";
+            }
             echo "<li>$item</li>";
         }
         echo "</ul>";
