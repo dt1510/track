@@ -13,7 +13,7 @@ function get_tracking_files() {
     global $base_dirs;
     $files = array();
     foreach(preg_split("/;/",$base_dirs) as $base_dir) {        
-        $files=array_merge($files, rglob("todo.txt", 0, $base_dir));
+        $files=array_merge($files, rglob("todo.*", 0, $base_dir));
     }
     return $files;
 }
@@ -37,17 +37,25 @@ function extract_list($meta_file) {
     return $list;
 }
 
+function apply_markup($item) {
+    if(preg_match("/https?/",$item)) {
+       $item = "<a href='$item'>$item</a>";
+    }
+    //these item are in progress
+    if(preg_match("/^\*/", $item)) {
+        return "<i>".substr($item,1)."</i>";
+    }
+    return $item;
+}
+
 function print_list($list) {
 
     foreach($list as $heading => $sublist) {
         echo "<div>";
         echo "<sublist_header>$heading</sublist_header>";
         echo "<ul>";
-        foreach($sublist as $item) {
-            if(preg_match("/https?/",$item)) {
-                $item = "<a href='$item'>$item</a>";
-            }
-            echo "<li>$item</li>";
+        foreach($sublist as $item) {            
+            echo "<li>".apply_markup($item)."</li>";
         }
         echo "</ul>";
         echo "</div>";
@@ -65,7 +73,7 @@ function print_subject($file) {
 
 function extract_priorities($list) {
     foreach($list as $heading => $sublist) {
-        if(!preg_match("/^-p[0-9]/", $heading)) {
+        if(!preg_match("/^[-#]p[0-9]/", $heading)) {
             unset($list[$heading]);
         }
     }
@@ -103,5 +111,6 @@ div{padding:3px;}
 h1{font-weight:bold;}
 sublist_header{font-weight:bold;}
 subject{font-weight:bold;color:#f00;}
+i{font-style:italic;}
 </style>
 </html>
